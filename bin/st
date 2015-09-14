@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+
+var Slack = require('slack-client');
+var client = new Slack(process.env['SLACK_API_TOKEN']);
+
+client.on('message', function(msg){
+  var channel = client.getChannelGroupOrDMByID(msg.channel);
+  var user = client.getUserByID(msg.user);
+  var type = msg.type;
+  var ts = msg.ts;
+  var text = msg.text;
+
+  var channelName = 'UNKNOWN_CHANNEL', userName = 'UNKNOWN_USER';
+  if (channel && channel.is_channel) {
+    channelName = '#'
+    if (channel.name) {
+      channelName += channel.name;
+    }
+  }
+  if (user && user.name) {
+    userName = "@";
+    userName += user.name;
+  }
+
+  console.log("[" + type + ": " + channelName + " " + userName + " " + ts + "] " + text);
+});
+
+client.on('error', function(e){
+  console.error("error: " + error);
+});
+client.login();
